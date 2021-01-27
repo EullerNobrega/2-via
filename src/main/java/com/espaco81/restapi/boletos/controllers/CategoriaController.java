@@ -12,18 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.espaco81.restapi.boletos.event.RecursoCriadoEvent;
-import com.espaco81.restapi.boletos.model.Boleto;
-import com.espaco81.restapi.boletos.services.BoletoService;
-
-import javassist.NotFoundException;
+import com.espaco81.restapi.boletos.model.Categoria;
+import com.espaco81.restapi.boletos.services.CategoriaService;
 
 /**
  * 
@@ -32,40 +28,42 @@ import javassist.NotFoundException;
  */
 
 @RestController
-@RequestMapping("/boletos")
-public class BoletoController implements CadController<Boleto> {
+@RequestMapping("/categorias")
+public class CategoriaController implements CadController<Categoria>{
 	@Autowired
-	private BoletoService boletoService;
-
+	CategoriaService categoriaService;
+	
 	@Autowired
 	private ApplicationEventPublisher publisher;
-
+	
+	@Override
 	@GetMapping
-	public List<Boleto> listAll() {
-		return boletoService.listAll();
+	public List<Categoria> listAll() {
+		return categoriaService.listAll();
 	}
 
+	@Override
 	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<Boleto> persist(@Valid @RequestBody Boleto boleto, HttpServletResponse response) {
-		Boleto boletoSalvo = boletoService.insert(boleto);
-		publisher.publishEvent(new RecursoCriadoEvent(this, response, boletoSalvo.getId()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(boletoSalvo);
+	public ResponseEntity<Categoria> persist(@Valid Categoria categoria, HttpServletResponse response) {
+		Categoria categoriaSalva = categoriaService.insert(categoria);
+		publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getId()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva);
 	}
 
+	@Override
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Boleto>> find(@PathVariable Long id) {
-		Optional<Boleto> boleto = boletoService.findOne(id);
-		return boleto.isPresent() ? ResponseEntity.ok(boleto) : ResponseEntity.notFound().build();
-
+	public ResponseEntity<Optional<Categoria>> find(Long id) {
+		Optional<Categoria> categoria = categoriaService.findOne(id);
+		return categoria.isPresent() ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
 	}
 
 	@Override
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(Long id) {
-		boletoService.delete(id);
+		categoriaService.delete(id);
 		
 	}
+	
 
 }

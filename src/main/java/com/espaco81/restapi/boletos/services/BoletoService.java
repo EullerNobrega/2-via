@@ -16,19 +16,28 @@ import com.espaco81.restapi.boletos.model.Boleto;
  */
 
 @Service
-public class BoletoService {
+public class BoletoService implements CadService<Boleto> {
 	@Autowired
 	private BoletoDAO boletoDAO;
-	
+
+	@Override
 	public List<Boleto> listAll() {
 		return boletoDAO.findAll();
 	}
-	
+
+	@Override
 	public Boleto insert(Boleto boleto) {
 		return boletoDAO.save(boleto);
 	}
-	
+
+	@Override
 	public Optional<Boleto> findOne(Long id) {
 		return boletoDAO.findById(id);
+	}
+
+	@Override
+	public void delete(Long id) {
+		boletoDAO.deleteById(id);
+
 	}
 }
